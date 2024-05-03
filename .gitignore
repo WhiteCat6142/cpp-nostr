@@ -1,3 +1,4 @@
 subprojects/rx-nostr-cpp
 subprojects/libhv
 build
+*.log

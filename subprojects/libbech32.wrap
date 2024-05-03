@@ -1,0 +1,7 @@
+[wrap-git]
+directory=libbech32
+url=https://github.com/madMAx43v3r/libbech32.git
+revision=head
+clone_depth=1
+diff_files = libbech32/1680a2407d930d4c101b6d6d1828139597e34e12.patch
+
