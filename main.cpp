@@ -62,7 +62,7 @@ time_t now()
     return n;
 }
 
-void sign(char *nsec)
+std::string sign(char *nsec)
 {
 
     unsigned char sk[32];
@@ -81,6 +81,7 @@ void sign(char *nsec)
     ev.tags = vec;
     NostrEventSignYYJSON i;
     i.sign_event(sk, ev);
+    return i.encode(ev);
 }
 
 int main(int argc, char *argv[])
@@ -103,6 +104,11 @@ int main(int argc, char *argv[])
     logger->log(LogLevel::INFO, "[main] Wait 3 seconds");
     std::this_thread::sleep_for(3000ms);
 
+    if (argc > 1)
+    {
+        rx_nostr.send(sign(argv[1]),"wss://relay-jp.nostr.wirednet.jp/");
+    }
+
     logger->log(LogLevel::INFO, "[main] unsubscribe");
     rx_nostr.unsubscribe();
 
@@ -111,10 +117,6 @@ int main(int argc, char *argv[])
 
     logger->log(LogLevel::INFO, "[main] bye");
 
-    if (argc > 1)
-    {
-        sign(argv[1]);
-    }
 
 FINALIZE:
 

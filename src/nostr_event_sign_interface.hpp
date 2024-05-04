@@ -13,6 +13,7 @@ class NostrEventSignInterface
     {
     }
     virtual bool sign_event(const unsigned char *sk, NostrEvent &ev) const = 0;
+    virtual std::string encode(NostrEvent &ev) const = 0;
 };
 }  // namespace rx_nostr
 

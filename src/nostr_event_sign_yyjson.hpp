@@ -110,6 +110,33 @@ namespace rx_nostr
             ev.sig = digest2hex(sig, 64);
             return true;
         }
+
+        std::string encode(NostrEvent &ev) const
+        {
+            yyjson_mut_doc *doc = yyjson_mut_doc_new(NULL);
+
+            yyjson_mut_val *a = yyjson_mut_obj(doc);
+            yyjson_mut_doc_set_root(doc, a);
+            yyjson_mut_obj_add_str(doc, a, "id", ev.id);
+            yyjson_mut_obj_add_str(doc, a, "pubkey", ev.pubkey);
+            yyjson_mut_obj_add_uint(doc, a, "created_at", ev.created_at);
+            yyjson_mut_obj_add_int(doc, a, "kind", ev.kind);
+            auto arr = yyjson_mut_obj_add_arr(doc, a, "tags");
+            for (auto &x : ev.tags)
+            {
+                auto child = yyjson_mut_arr_add_arr(doc, arr);
+                for (auto &str : x)
+                {
+                    yyjson_mut_arr_add_str(doc, child, str);
+                }
+            }
+            yyjson_mut_obj_add_str(doc, a, "content", ev.content);
+            yyjson_mut_obj_add_str(doc, a, "sig", ev.sig);
+
+            char *json = yyjson_mut_write(doc, 0, NULL);
+            yyjson_mut_doc_free(doc);
+            return std::string(json);
+        }
     };
 } // namespace rx_nostr
 
