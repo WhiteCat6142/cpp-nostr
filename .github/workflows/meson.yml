@@ -1,0 +1,22 @@
+name: Meson CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+    - name: Setup Meson
+      run: pip3 install --user meson
+    - name: Build
+      run: |
+        meson setup ./build
+        ninja -v -C ./build
