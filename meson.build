@@ -10,9 +10,16 @@ src = ['main.cpp']
 cpp = meson.get_compiler('cpp')
 
 pthread = dependency('threads')
-yyjson = dependency('yyjson')
 
 cmake = import('cmake')
+
+yyjson_subproject = cmake.subproject(
+  'yyjson',
+  cmake_options: [
+  ]
+)
+yyjson_dep = yyjson_subproject.dependency('yyjson')
+
 libhv_subproject = cmake.subproject(
   'libhv',
   cmake_options: [
@@ -43,5 +50,5 @@ executable('main', src, cpp_args:[
         ],link_args:[
         '-fuse-ld=lld'
         ],dependencies:[
-        pthread,yyjson,secp256k1_dep,libbech32_dep,libhv_dep,rx_nostr_cpp_dep
+        pthread,yyjson_dep,secp256k1_dep,libbech32_dep,libhv_dep,rx_nostr_cpp_dep
         ])
