@@ -32,7 +32,6 @@ secp256k1_dep = secp256k1_subproject.dependency('secp256k1')
 libbech32_subproject = cmake.subproject(
   'libbech32',
   cmake_options: [
-    '-DLIBBECH32_BUILD_TESTS=OFF'
   ]
 )
 libbech32_dep = libbech32_subproject.dependency('bech32')
