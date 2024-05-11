@@ -1,8 +1,8 @@
 # cpp-nostr
 
 ### Build & Installation
-Require ninja and meson to build this software.
-Also this depends on cmake and yyjson-dev.
+Require ninja, meson, cmake and lld to build this software.
+Also this depends on yyjson, rx-nostr-cpp, libhv, libbech32, secp256k1 which are automatically installed by meson.
 
 To compile, execute the following commands.
 ```sh
