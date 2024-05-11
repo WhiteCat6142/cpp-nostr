@@ -1,4 +1,6 @@
 subprojects/rx-nostr-cpp
 subprojects/libhv
+subprojects/secp256k1
+subprojects/libbech32
 build
 *.log
