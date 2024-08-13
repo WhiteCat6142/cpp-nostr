@@ -19,5 +19,5 @@ jobs:
         sudo apt-get install ninja-build lld
     - name: Build
       run: |
-        cmake -S . -B build --preset=default -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja
+        cmake -S . -B build --preset=default -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja -DCMAKE_CXX_COMPILER=/usr/bin/gcc -DCMAKE_CPP_COMPILER=/usr/bin/g++
         ninja -v -C ./build
