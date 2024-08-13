@@ -86,8 +86,6 @@ std::string sign(char *nsec)
     return i.encode(ev);
 }
 
-
-
 int main(int argc, char *argv[])
 {
 

@@ -62,7 +62,6 @@ namespace cpp_nostr
             uint8_t aux[32];
             if (!fill_random(aux, sizeof(aux)))
                 goto FAIL;
-            std::cout << "fail" << std::endl;
 
             uint8_t sig[64] = {0};
             if (!secp256k1_schnorrsig_sign32(ctx, sig, digest, &keypair, aux))
