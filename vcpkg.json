@@ -1,0 +1,19 @@
+{
+  "name": "cpp-nostr",
+  "version": "1.0",
+  "dependencies": [
+    "yyjson",
+    "fmt",
+    "nameof",
+    "secp256k1",
+    "libhv",
+    {
+      "name": "cpp-yyjson",
+      "host": true
+    },
+    {
+      "name": "libbech32",
+      "host": true
+    }
+  ]
+}

@@ -1,5 +1,0 @@
-[wrap-git]
-directory=libbech32
-url=https://github.com/dcdpr/libbech32.git
-revision=8fe4d1577a7bdd99036279fca763a94328957eff
-clone_depth=1

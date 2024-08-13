@@ -1,12 +1,12 @@
-#include <rx_nostr.hpp>
-#include <logger_stdout.hpp>
+//#include <rx_nostr.hpp>
+//#include <logger_stdout.hpp>
 #include <thread>
 #include <iostream>
 
-#include <src/nostr_event_sign_yyjson.hpp>
-#include <src/utils.hpp>
+#include <nostr_event_sign_yyjson.hpp>
+#include <utils.hpp>
 
-#include <bech32.h>
+#include <libbech32/bech32.h>
 
 #include <ctime>
 
@@ -14,7 +14,7 @@ using namespace std::chrono_literals;
 using namespace cpp_nostr;
 
 static const int MAX_EVENTS = 300;
-static LoggerInterface *logger = nullptr;
+//static LoggerInterface *logger = nullptr;
 static int count = 0;
 
 void callback(const NostrEvent &event)
@@ -128,6 +128,7 @@ int main(int argc, char *argv[])
 
     if (argc > 1)
         std::cout << sign(argv[1]) << std::endl;
+    /*
 
     logger = new LoggerStdout();
     RxNostr rx_nostr(logger);
@@ -166,7 +167,7 @@ FINALIZE:
     if (logger != nullptr)
     {
         delete logger;
-    }
+    }*/
 
     return 0;
 }

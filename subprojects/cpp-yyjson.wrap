@@ -1,5 +1,0 @@
-[wrap-git]
-directory=cpp-yyjson
-url=https://github.com/yosh-matsuda/cpp-yyjson.git
-revision=head
-clone_depth=1

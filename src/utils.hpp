@@ -61,7 +61,7 @@ int fill_random(unsigned char* data, size_t size) {
     std::random_device rng;
     for(auto it=data;it<data+size;++it)
         *it=rng();
-    return 0;
+    return 1;
 }
 
 }

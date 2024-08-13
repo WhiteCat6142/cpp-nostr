@@ -1,5 +1,0 @@
-[wrap-git]
-directory=yyjson
-url=https://github.com/ibireme/yyjson.git
-revision=head
-clone_depth=1

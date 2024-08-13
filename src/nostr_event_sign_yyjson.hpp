@@ -7,8 +7,8 @@
 #include "./nostr_event_sign_interface.hpp"
 
 #include "./utils.hpp"
-#include <include/secp256k1.h>
-#include <include/secp256k1_schnorrsig.h>
+#include <secp256k1.h>
+#include <secp256k1_schnorrsig.h>
 
 using namespace yyjson;
 
@@ -18,9 +18,9 @@ namespace cpp_nostr
     {
     private:
         static const std::string writeJson(const NostrEvent &ev)
-        {/*
-            const auto a = array{0,ev.pubkey,ev.created_at,ev.kind,ev.tags,ev.content};*/
-            return "";
+        {
+            const auto a = array{0,ev.pubkey,ev.created_at,ev.kind,ev.tags,ev.content};
+            return std::string(a.write());
         }
 
     public:
@@ -62,6 +62,7 @@ namespace cpp_nostr
             uint8_t aux[32];
             if (!fill_random(aux, sizeof(aux)))
                 goto FAIL;
+            std::cout << "fail" << std::endl;
 
             uint8_t sig[64] = {0};
             if (!secp256k1_schnorrsig_sign32(ctx, sig, digest, &keypair, aux))
@@ -73,7 +74,7 @@ namespace cpp_nostr
         }
 
         const std::string encode(const NostrEvent &ev) const
-        {/*
+        {
             const auto a = object{
                 {"id", ev.id},
                 {"pubkey", ev.pubkey},
@@ -82,8 +83,8 @@ namespace cpp_nostr
                 {"tags", ev.tags},
                 {"content", ev.content},
                 {"sig", ev.sig}
-            };*/
-            return "";
+            };
+            return std::string(a.write());
         }
     };
 }

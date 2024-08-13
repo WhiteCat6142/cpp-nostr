@@ -1,6 +1,0 @@
-[wrap-git]
-directory=rx-nostr-cpp
-url=https://github.com/Hakkadaikon/rx-nostr-cpp.git
-revision=head
-clone_depth=1
-patch_directory=rx-nostr
