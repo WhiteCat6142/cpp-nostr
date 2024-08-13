@@ -1,4 +1,4 @@
-name: Meson CI
+name: C++ CI
 
 on:
   push:
@@ -13,14 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-    - name: Setup Meson
-      run: pip3 install --user meson
     - name: Install Ninja & LLD
       run: |
         sudo apt-get update
         sudo apt-get install ninja-build lld
     - name: Build
       run: |
-        meson setup ./build
+        cmake -S . -B build --preset=default
         ninja -v -C ./build
