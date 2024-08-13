@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-find_package(OpenSSL 3.1.1 REQUIRED COMPONENTS SSL Crypto)
+find_package(OpenSSL 3.0.0 REQUIRED COMPONENTS SSL Crypto)
 
 find_package(fmt CONFIG REQUIRED)
 find_package(nameof CONFIG REQUIRED)
