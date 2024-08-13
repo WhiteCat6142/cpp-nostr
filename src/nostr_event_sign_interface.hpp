@@ -1,10 +1,10 @@
-#ifndef NOSTR_EVENT_SIGN_INTERFACE_HPP
-#define NOSTR_EVENT_SIGN_INTERFACE_HPP
+#ifndef CPP_NOSTR_EVENT_SIGN_INTERFACE_HPP
+#define CPP_NOSTR_EVENT_SIGN_INTERFACE_HPP
 
 #include "nostr_event.hpp"
 #include <string>
 
-namespace rx_nostr
+namespace cpp_nostr
 {
 class NostrEventSignInterface
 {
@@ -13,8 +13,8 @@ class NostrEventSignInterface
     {
     }
     virtual bool sign_event(const unsigned char *sk, NostrEvent &ev) const = 0;
-    virtual std::string encode(NostrEvent &ev) const = 0;
+    virtual const std::string encode(const NostrEvent &ev) const = 0;
 };
-}  // namespace rx_nostr
+}
 
-#endif  // NOSTR_EVENT_SIGN_INTERFACE_HPP
+#endif

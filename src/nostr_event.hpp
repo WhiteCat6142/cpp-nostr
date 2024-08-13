@@ -1,21 +1,21 @@
-#ifndef NOSTR_EVENT_HPP
-#define NOSTR_EVENT_HPP
+#ifndef CPP_NOSTR_EVENT_HPP
+#define CPP_NOSTR_EVENT_HPP
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
-namespace rx_nostr
+namespace cpp_nostr
 {
-using NostrEventId        = char*;
-using NostrEventPubkey    = char*;
+using NostrEventId        = std::string;
+using NostrEventPubkey    = std::string;
 using NostrEventKind      = int;
 using NostrEventKinds     = std::vector<int>;
-using NostrEventTagItem   = char*;
-using NostrEventTags      = std::vector<std::vector<char*>>;
-using NostrEventSignature = char*;
-using NostrEventContent   = char*;
-using NostrEventSubId     = char*;
+using NostrEventTagItem   = std::string;
+using NostrEventTags      = std::vector<std::vector<std::string>>;
+using NostrEventSignature = std::string;
+using NostrEventContent   = std::string;
+using NostrEventSubId     = std::string;
 using NostrEventCreatedAt = uint64_t;
 
 class NostrEvent final
@@ -28,10 +28,7 @@ class NostrEvent final
     NostrEventContent   content;
     NostrEventSignature sig;
     NostrEventCreatedAt created_at;
-    ~NostrEvent()
-    {
-    }
 };
-}  // namespace rx_nostr
+}
 
-#endif  // NOSTR_EVENT_HPP
+#endif

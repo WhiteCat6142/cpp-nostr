@@ -1,15 +1,17 @@
 #include <rx_nostr.hpp>
 #include <logger_stdout.hpp>
 #include <thread>
+#include <iostream>
 
 #include <src/nostr_event_sign_yyjson.hpp>
+#include <src/utils.hpp>
 
 #include <bech32.h>
 
 #include <ctime>
 
 using namespace std::chrono_literals;
-using namespace rx_nostr;
+using namespace cpp_nostr;
 
 static const int MAX_EVENTS = 300;
 static LoggerInterface *logger = nullptr;
@@ -21,7 +23,7 @@ void callback(const NostrEvent &event)
     {
         return;
     }
-    logger->log(LogLevel::INFO, event.content);
+    //logger->log(LogLevel::INFO, event.content);
 }
 
 template <int from, int to, typename Iterator, typename Fn>
@@ -74,7 +76,7 @@ std::string sign(char *nsec)
                                sk[pos++] = c;
                        });
     NostrEvent ev;
-    std::vector<std::vector<char *>> vec{};
+    std::vector<std::vector<std::string>> vec{};
     ev.content = "test";
     ev.created_at = now();
     ev.kind = 1;
@@ -84,8 +86,49 @@ std::string sign(char *nsec)
     return i.encode(ev);
 }
 
+
+
 int main(int argc, char *argv[])
 {
+
+    std::vector<uint8_t> data = hex2bytes("7e7e9c42a91bfef19fa929e5fda1b72e0ebc1a4c1141673e2794234d86addf4e");
+    bech32::DecodedResult decodedResult = bech32::decode("npub10elfcs4fr0l0r8af98jlmgdh9c8tcxjvz9qkw038js35mp4dma8qzvjptg");
+    uint8_t sk[32];
+    // 5bits -> 8bits
+    convert_bits<5, 8>(decodedResult.dp.begin(), decodedResult.dp.end(),
+                       [&, pos = 0U](unsigned char c) mutable
+                       {
+                           if (pos < 32)
+                               sk[pos++] = c;
+                       });
+    std::vector<uint8_t> re(std::begin(sk), std::end(sk));
+    std::cout << decodedResult.hrp << std::endl;
+    std::copy(data.begin(), data.end(), std::ostream_iterator<int>(std::cout, ", "));
+    std::cout << std::endl;
+    std::copy(re.begin(), re.end(), std::ostream_iterator<int>(std::cout, ", "));
+    std::cout << std::endl;
+    std::cout << (data == re) << std::endl;
+    std::cout << (decodedResult.encoding == bech32::Encoding::Bech32) << std::endl;
+
+    uint8_t pk[52];
+    convert_bits<8, 5>(re.begin(), re.end(),
+                       [&, pos = 0U](unsigned char c) mutable
+                       {
+                           if (pos < 52)
+                               pk[pos++] = c;
+                       });
+    std::vector<uint8_t> re2(std::begin(pk), std::end(pk));
+    std::cout << (decodedResult.dp == re2) << std::endl;
+    std::string str = bech32::encodeUsingOriginalConstant(decodedResult.hrp, re2);
+    std::cout << str << std::endl;
+
+    char *message = "Sample Message";
+
+    std::cout << sha256(message, strlen(message)) << std::endl;
+
+    if (argc > 1)
+        std::cout << sign(argv[1]) << std::endl;
+
     logger = new LoggerStdout();
     RxNostr rx_nostr(logger);
 
