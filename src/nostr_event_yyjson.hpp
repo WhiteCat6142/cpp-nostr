@@ -28,7 +28,7 @@ namespace cpp_nostr
         {
         }
 
-        bool finalize_event(const uint8_t *sk, NostrEvent &ev) const
+        bool finalize_event(const uint8_t *sk)
         {
             secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
 
@@ -54,12 +54,12 @@ namespace cpp_nostr
             return false;
         NEXT:
 
-            ev.pubkey = bytes2hex(serialized_pubkey, sizeof(serialized_pubkey));
+            ev->pubkey = bytes2hex(serialized_pubkey, sizeof(serialized_pubkey));
 
-            const std::string input63 = writeJson(ev);
+            const std::string input63 = writeJson(*ev);
 
             const std::string id = sha256(input63.c_str(), input63.length());
-            ev.id = id;
+            ev->id = id;
 
             const uint8_t *digest = hex2bytes(id).data();
 
@@ -72,20 +72,20 @@ namespace cpp_nostr
                 goto FAIL;
             secp256k1_context_destroy(ctx);
 
-            ev.sig = bytes2hex(sig, 64);
+            ev->sig = bytes2hex(sig, 64);
             return true;
         }
 
-        const std::string encode(const NostrEvent &ev) const
+        const std::string encode() const
         {
             const auto a = object{
-                {"id", ev.id},
-                {"pubkey", ev.pubkey},
-                {"created_at", ev.created_at},
-                {"kind", ev.kind},
-                {"tags", ev.tags},
-                {"content", ev.content},
-                {"sig", ev.sig}};
+                {"id", ev->id},
+                {"pubkey", ev->pubkey},
+                {"created_at", ev->created_at},
+                {"kind", ev->kind},
+                {"tags", ev->tags},
+                {"content", ev->content},
+                {"sig", ev->sig}};
             return std::string(a.write());
         }
 

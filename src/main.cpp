@@ -83,8 +83,8 @@ std::string sign(char *nsec)
         .created_at = now()
     };
     NostrEventYYJSON i(&ev);
-    i.finalize_event(sk, ev);
-    return i.encode(ev);
+    i.finalize_event(sk);
+    return i.encode();
 }
 
 int main(int argc, char *argv[])
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
         auto e = sign(argv[1]);
         auto e2 = NostrEventYYJSON::decode(e);
         NostrEventYYJSON i(&e2);
-        auto y = i.encode(e2);
+        auto y = i.encode();
         std::cout << e << std::endl;
         std::cout << y << std::endl;
     }
