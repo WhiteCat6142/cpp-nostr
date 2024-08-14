@@ -28,7 +28,7 @@ namespace cpp_nostr
         {
         }
 
-        bool finalize_event(const std::vector<uint8_t> sk_)
+        bool finalize_event(const std::vector<uint8_t> &sk_)
         {
             if(sk_.size()!=32)
                 return false;
@@ -85,7 +85,7 @@ namespace cpp_nostr
             return std::string(a.write());
         }
 
-        static NostrEvent decode(const std::string s)
+        static NostrEvent decode(const std::string &s)
         {
             auto obj = read(s);
             return cast<NostrEvent>(obj);

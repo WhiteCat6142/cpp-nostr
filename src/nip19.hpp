@@ -45,7 +45,7 @@ namespace cpp_nostr
         }
 
     public:
-        static std::string encode(const std::string hrp, const std::vector<uint8_t> &code)
+        static std::string encode(const std::string &hrp, const std::vector<uint8_t> &code)
         {
             std::vector<uint8_t> pk;
             convert_bits<8, 5>(code.begin(), code.end(),
@@ -56,7 +56,7 @@ namespace cpp_nostr
             return bech32::encodeUsingOriginalConstant(hrp, pk);
         }
 
-        static std::optional<std::string> decode(const std::string s, std::vector<uint8_t> &out)
+        static std::optional<std::string> decode(const std::string &s, std::vector<uint8_t> &out)
         {
             bech32::DecodedResult decodedResult = bech32::decode(s);
             out.clear();
