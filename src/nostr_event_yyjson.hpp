@@ -78,7 +78,7 @@ namespace cpp_nostr
             if (!secp256k1_schnorrsig_sign32(ctx, sig, digest.data(), &keypair, aux))
                 goto FAIL;
 
-            if(!secp256k1_schnorrsig_verify(ctx, sig, digest.data(), 32, &pubkey))
+            if (!secp256k1_schnorrsig_verify(ctx, sig, digest.data(), 32, &pubkey))
                 goto FAIL;
 
             secp256k1_context_destroy(ctx);
@@ -90,6 +90,12 @@ namespace cpp_nostr
         static bool verify_event(const NostrEvent &ev)
         {
             bool res = false;
+
+            const std::string input63 = writeJson(ev);
+            const std::string id = sha256(input63.c_str(), input63.length());
+            if (ev.id != id)
+                return false;
+
             secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
             std::vector<uint8_t> serialized_pubkey = hex2bytes(ev.pubkey);
             std::vector<uint8_t> sig = hex2bytes(ev.sig);
