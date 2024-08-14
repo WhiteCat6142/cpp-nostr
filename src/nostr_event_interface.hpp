@@ -20,6 +20,10 @@ namespace cpp_nostr
         }
         virtual bool finalize_event(const std::vector<uint8_t> &sk) = 0;
         virtual const std::string encode() const = 0;
+        static bool verify_event(const NostrEvent &ev)
+        {
+            return false;
+        }
         static NostrEvent decode(const std::string &s)
         {
             return NostrEvent();

@@ -65,11 +65,16 @@ int main(int argc, char *argv[])
     {
         auto e = sign(argv[1]);
         auto e2 = NostrEventYYJSON::decode(e);
+        std::cout << NostrEventYYJSON::verify_event(e2) << std::endl;
         NostrEventYYJSON i(&e2);
         auto y = i.encode();
         std::cout << e << std::endl;
         std::cout << y << std::endl;
     }
+
+    auto knostr = R"({"id":"93dc70f965af436095ba1d60d5c66ee235fdf82222e78238022317d73a95565f","pubkey":"6a36c1a62cba047b1cdb93bef316c6617c79816e32b80166c471c30bdb77e526","created_at":1723649902,"kind":1,"tags":[],"content":"test","sig":"8d08e7ec3134288fee4db14842652771f765ecbd7676c442529c9ea9ff4861153919559a7757a77593525774a44ccf15fc2af982b6501ca4f34bf3454ca57f11"})";
+    auto e3 = NostrEventYYJSON::decode(knostr);
+    std::cout << NostrEventYYJSON::verify_event(e3) << std::endl;
     /*
 
     logger = new LoggerStdout();

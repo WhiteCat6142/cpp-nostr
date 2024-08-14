@@ -30,10 +30,15 @@ namespace cpp_nostr
 
         bool finalize_event(const std::vector<uint8_t> &sk_)
         {
-            if(sk_.size()!=32)
+            if (sk_.size() != 32)
                 return false;
             const unsigned char *sk = sk_.data();
             secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
+
+            uint8_t randomize[32];
+            if (!fill_random(randomize, sizeof(randomize)))
+                goto FAIL;
+            secp256k1_context_randomize(ctx, randomize);
 
             if (!secp256k1_ec_seckey_verify(ctx, sk))
                 goto FAIL;
@@ -63,20 +68,45 @@ namespace cpp_nostr
 
             const std::string id = sha256(input63.c_str(), input63.length());
             ev->id = id;
+            const std::vector<uint8_t> digest = hex2bytes(id);
 
-            const uint8_t *digest = hex2bytes(id).data();
-
-            uint8_t aux[32];
+            uint8_t aux[32] = {0};
             if (!fill_random(aux, sizeof(aux)))
                 goto FAIL;
 
             uint8_t sig[64] = {0};
-            if (!secp256k1_schnorrsig_sign32(ctx, sig, digest, &keypair, aux))
+            if (!secp256k1_schnorrsig_sign32(ctx, sig, digest.data(), &keypair, aux))
                 goto FAIL;
+
+            if(!secp256k1_schnorrsig_verify(ctx, sig, digest.data(), 32, &pubkey))
+                goto FAIL;
+
             secp256k1_context_destroy(ctx);
 
             ev->sig = bytes2hex(sig, 64);
             return true;
+        }
+
+        static bool verify_event(const NostrEvent &ev)
+        {
+            bool res = false;
+            secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
+            std::vector<uint8_t> serialized_pubkey = hex2bytes(ev.pubkey);
+            std::vector<uint8_t> sig = hex2bytes(ev.sig);
+            std::vector<uint8_t> msg = hex2bytes(ev.id);
+            secp256k1_xonly_pubkey pubkey;
+            if (sig.size() != 64)
+                goto FAIL;
+            if (msg.size() != 32)
+                goto FAIL;
+            if (!secp256k1_xonly_pubkey_parse(ctx, &pubkey, serialized_pubkey.data()))
+                goto FAIL;
+            res = secp256k1_schnorrsig_verify(ctx, sig.data(), msg.data(), 32, &pubkey);
+            secp256k1_context_destroy(ctx);
+            return res;
+        FAIL:
+            secp256k1_context_destroy(ctx);
+            return false;
         }
 
         const std::string encode() const
