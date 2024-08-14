@@ -1,10 +1,10 @@
-#ifndef CPP_NOSTR_EVENT_SIGN_YYJSON_HPP_
-#define CPP_NOSTR_EVENT_SIGN_YYJSON_HPP_
+#ifndef CPP_NOSTR_EVENT_YYJSON_HPP_
+#define CPP_NOSTR_EVENT_YYJSON_HPP_
 
 #include "cpp_yyjson.hpp"
 #include "./nostr_event.hpp"
-//#include "logger_interface.hpp"
-#include "./nostr_event_sign_interface.hpp"
+// #include "logger_interface.hpp"
+#include "./nostr_event_interface.hpp"
 
 #include "./utils.hpp"
 #include <secp256k1.h>
@@ -14,17 +14,21 @@ using namespace yyjson;
 
 namespace cpp_nostr
 {
-    class NostrEventSignYYJSON final : public NostrEventSignInterface
+    class NostrEventYYJSON final : public NostrEventInterface
     {
     private:
         static const std::string writeJson(const NostrEvent &ev)
         {
-            const auto a = array{0,ev.pubkey,ev.created_at,ev.kind,ev.tags,ev.content};
+            const auto a = array{0, ev.pubkey, ev.created_at, ev.kind, ev.tags, ev.content};
             return std::string(a.write());
         }
 
     public:
-        bool sign_event(const uint8_t *sk, NostrEvent &ev) const
+        NostrEventYYJSON(NostrEvent *ev_) : NostrEventInterface(ev_)
+        {
+        }
+
+        bool finalize_event(const uint8_t *sk, NostrEvent &ev) const
         {
             secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
 
@@ -81,9 +85,14 @@ namespace cpp_nostr
                 {"kind", ev.kind},
                 {"tags", ev.tags},
                 {"content", ev.content},
-                {"sig", ev.sig}
-            };
+                {"sig", ev.sig}};
             return std::string(a.write());
+        }
+
+        static NostrEvent decode(const std::string s)
+        {
+            auto obj = read(s);
+            return cast<NostrEvent>(obj);
         }
     };
 }

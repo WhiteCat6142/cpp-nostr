@@ -16,7 +16,6 @@ std::string bytes2hex(const unsigned char *data, const size_t len)
     std::string s;
     s.reserve((len << 1) + 1);
 
-    size_t j = 0;
     for (size_t i = 0; i < len; i++)
     {
         unsigned char b = data[i];
@@ -50,9 +49,9 @@ std::string sha256(const char *message, const size_t len)
 
     unsigned char digest[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha_ctx;
-    SHA256_Init(&sha_ctx);                 // コンテキストを初期化
-    SHA256_Update(&sha_ctx, message, len); // 注意！！　こちらに変更する必要がある
-    SHA256_Final(digest, &sha_ctx);        // digest に出力
+    SHA256_Init(&sha_ctx);
+    SHA256_Update(&sha_ctx, message, len);
+    SHA256_Final(digest, &sha_ctx);
 
     return bytes2hex(digest, SHA256_DIGEST_LENGTH);
 }

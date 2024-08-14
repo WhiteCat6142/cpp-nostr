@@ -1,9 +1,9 @@
-//#include <rx_nostr.hpp>
-//#include <logger_stdout.hpp>
+// #include <rx_nostr.hpp>
+// #include <logger_stdout.hpp>
 #include <thread>
 #include <iostream>
 
-#include <nostr_event_sign_yyjson.hpp>
+#include <nostr_event_yyjson.hpp>
 #include <utils.hpp>
 
 #include <libbech32/bech32.h>
@@ -14,7 +14,7 @@ using namespace std::chrono_literals;
 using namespace cpp_nostr;
 
 static const int MAX_EVENTS = 300;
-//static LoggerInterface *logger = nullptr;
+// static LoggerInterface *logger = nullptr;
 static int count = 0;
 
 void callback(const NostrEvent &event)
@@ -23,7 +23,7 @@ void callback(const NostrEvent &event)
     {
         return;
     }
-    //logger->log(LogLevel::INFO, event.content);
+    // logger->log(LogLevel::INFO, event.content);
 }
 
 template <int from, int to, typename Iterator, typename Fn>
@@ -75,14 +75,15 @@ std::string sign(char *nsec)
                            if (pos < 32)
                                sk[pos++] = c;
                        });
-    NostrEvent ev;
     std::vector<std::vector<std::string>> vec{};
-    ev.content = "test";
-    ev.created_at = now();
-    ev.kind = 1;
-    ev.tags = vec;
-    NostrEventSignYYJSON i;
-    i.sign_event(sk, ev);
+    NostrEvent ev{
+        .kind = 1,
+        .tags = vec,
+        .content = "test",
+        .created_at = now()
+    };
+    NostrEventYYJSON i(&ev);
+    i.finalize_event(sk, ev);
     return i.encode(ev);
 }
 
@@ -125,7 +126,14 @@ int main(int argc, char *argv[])
     std::cout << sha256(message, strlen(message)) << std::endl;
 
     if (argc > 1)
-        std::cout << sign(argv[1]) << std::endl;
+    {
+        auto e = sign(argv[1]);
+        auto e2 = NostrEventYYJSON::decode(e);
+        NostrEventYYJSON i(&e2);
+        auto y = i.encode(e2);
+        std::cout << e << std::endl;
+        std::cout << y << std::endl;
+    }
     /*
 
     logger = new LoggerStdout();
