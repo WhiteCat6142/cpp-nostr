@@ -10,7 +10,7 @@
 namespace cpp_nostr
 {
 
-std::string bytes2hex(const unsigned char *data, const size_t len)
+std::string bytes2hex(const uint8_t *data, const size_t len)
 {
     const char hexchars[] = "0123456789abcdef";
     std::string s;
@@ -18,7 +18,7 @@ std::string bytes2hex(const unsigned char *data, const size_t len)
 
     for (size_t i = 0; i < len; i++)
     {
-        unsigned char b = data[i];
+        uint8_t b = data[i];
 
         s.push_back(hexchars[b >> 4]);
         s.push_back(hexchars[b & 0xF]);
@@ -30,11 +30,11 @@ std::string bytes2hex(const unsigned char *data, const size_t len)
 std::vector<uint8_t> hex2bytes(const std::string &s)
 {
     std::vector<uint8_t> v;
-    v.reserve(s.size());
+    v.reserve(s.size()>>1);
     for (auto it = s.cbegin(); it != s.cend(); ++it)
     {
         char b = *it;
-        unsigned char c = (b < 'a') ? b - '0' : b - 'a' + 10;
+        uint8_t c = (b < 'a') ? b - '0' : b - 'a' + 10;
         c <<= 4;
         ++it;
         b = *it;
@@ -56,7 +56,7 @@ std::string sha256(const char *message, const size_t len)
     return bytes2hex(digest, SHA256_DIGEST_LENGTH);
 }
 
-int fill_random(unsigned char* data, size_t size) {
+int fill_random(uint8_t* data, size_t size) {
     std::random_device rng;
     for(auto it=data;it<data+size;++it)
         *it=rng();
