@@ -77,10 +77,10 @@ std::string sign(char *nsec)
                        });
     std::vector<std::vector<std::string>> vec{};
     NostrEvent ev{
+        .created_at = now(),
         .kind = 1,
         .tags = vec,
-        .content = "test",
-        .created_at = now()
+        .content = "test"
     };
     NostrEventYYJSON i(&ev);
     i.finalize_event(sk);

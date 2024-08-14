@@ -23,11 +23,11 @@ class NostrEvent final
    public:
     NostrEventId        id;
     NostrEventPubkey    pubkey;
+    NostrEventCreatedAt created_at;
     NostrEventKind      kind;
     NostrEventTags      tags;
     NostrEventContent   content;
     NostrEventSignature sig;
-    NostrEventCreatedAt created_at;
 };
 }
 

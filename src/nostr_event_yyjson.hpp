@@ -78,14 +78,7 @@ namespace cpp_nostr
 
         const std::string encode() const
         {
-            const auto a = object{
-                {"id", ev->id},
-                {"pubkey", ev->pubkey},
-                {"created_at", ev->created_at},
-                {"kind", ev->kind},
-                {"tags", ev->tags},
-                {"content", ev->content},
-                {"sig", ev->sig}};
+            const auto a = object(*ev);
             return std::string(a.write());
         }
 
