@@ -84,7 +84,9 @@
         "fstream": "cpp",
         "cfenv": "cpp",
         "typeindex": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "expected": "cpp",
+        "ranges": "cpp"
     },
     "cmake.configureOnOpen": false
 }

@@ -18,7 +18,7 @@ namespace cpp_nostr
         virtual ~NostrEventInterface()
         {
         }
-        virtual bool finalize_event(const uint8_t *sk) = 0;
+        virtual bool finalize_event(const std::vector<uint8_t> sk) = 0;
         virtual const std::string encode() const = 0;
         static NostrEvent decode(const std::string s)
         {

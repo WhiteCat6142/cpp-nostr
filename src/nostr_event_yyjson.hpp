@@ -28,8 +28,11 @@ namespace cpp_nostr
         {
         }
 
-        bool finalize_event(const uint8_t *sk)
+        bool finalize_event(const std::vector<uint8_t> sk_)
         {
+            if(sk_.size()!=32)
+                return false;
+            const unsigned char *sk = sk_.data();
             secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
 
             if (!secp256k1_ec_seckey_verify(ctx, sk))
