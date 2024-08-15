@@ -7,7 +7,7 @@
 
 namespace cpp_nostr
 {
-    using Func = std::function<void(const NostrEvent&)>; 
+    using NostrEventCallback = std::function<void(const NostrEvent&)>; 
     class NostrRelayInterface
     {
     protected:
@@ -16,11 +16,10 @@ namespace cpp_nostr
         }
 
     public:
-        virtual ~NostrRelayInterface()
-        {
-        }
-        virtual bool subscribe(const Func callback, const NostrEventKinds& kinds, const uint32_t limit) = 0;
-        virtual bool publish(const NostrEvent &ev) = 0;
+        virtual ~NostrRelayInterface() = default;
+        virtual NostrEventSubId subscribe(const NostrEventCallback callback, const NostrEventKinds& kinds, const uint32_t limit) = 0;
+        virtual bool unsubscribe(const NostrEventSubId id) = 0;
+        virtual bool publish(const std::string &ev) = 0;
     };
 }
 

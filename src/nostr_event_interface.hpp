@@ -8,16 +8,8 @@ namespace cpp_nostr
 {
     class NostrEventInterface
     {
-    protected:
-        NostrEvent* ev;
-
     public:
-        NostrEventInterface(NostrEvent *ev_) : ev(ev_)
-        {
-        }
-        virtual ~NostrEventInterface()
-        {
-        }
+        virtual ~NostrEventInterface() = default;
         virtual bool finalize_event(const std::vector<uint8_t> &sk) = 0;
         virtual const std::string encode() const = 0;
         static bool verify_event(const NostrEvent &ev)

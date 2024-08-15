@@ -15,7 +15,7 @@ using NostrEventTagItem   = std::string;
 using NostrEventTags      = std::vector<std::vector<std::string>>;
 using NostrEventSignature = std::string;
 using NostrEventContent   = std::string;
-using NostrEventSubId     = std::string;
+using NostrEventSubId     = int;
 using NostrEventCreatedAt = uint64_t;
 
 class NostrEvent final

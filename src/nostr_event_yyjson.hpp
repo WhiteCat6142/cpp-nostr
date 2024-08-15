@@ -17,6 +17,8 @@ namespace cpp_nostr
     class NostrEventYYJSON final : public NostrEventInterface
     {
     private:
+        NostrEvent* ev;
+
         static const std::string writeJson(const NostrEvent &ev)
         {
             const auto a = array{0, ev.pubkey, ev.created_at, ev.kind, ev.tags, ev.content};
@@ -24,11 +26,11 @@ namespace cpp_nostr
         }
 
     public:
-        NostrEventYYJSON(NostrEvent *ev_) : NostrEventInterface(ev_)
+        NostrEventYYJSON(NostrEvent *ev_) : ev(ev_)
         {
         }
 
-        bool finalize_event(const std::vector<uint8_t> &sk_)
+        bool finalize_event(const std::vector<uint8_t> &sk_) override
         {
             if (sk_.size() != 32)
                 return false;
@@ -115,7 +117,7 @@ namespace cpp_nostr
             return false;
         }
 
-        const std::string encode() const
+        const std::string encode() const override
         {
             const auto a = object(*ev);
             return std::string(a.write());
