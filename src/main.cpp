@@ -6,6 +6,11 @@
 #include <nostr_event_yyjson.hpp>
 #include <utils.hpp>
 #include <nip19.hpp>
+#include "nostr_subscription.hpp"
+#include "nostr_relay_interface.hpp"
+#include "nostr_relay.hpp"
+#include "nostr_relay_simple.hpp"
+#include "nostr_relay_libhv.hpp"
 
 #include <ctime>
 
@@ -75,6 +80,16 @@ int main(int argc, char *argv[])
     auto knostr = R"({"id":"93dc70f965af436095ba1d60d5c66ee235fdf82222e78238022317d73a95565f","pubkey":"6a36c1a62cba047b1cdb93bef316c6617c79816e32b80166c471c30bdb77e526","created_at":1723649902,"kind":1,"tags":[],"content":"test","sig":"8d08e7ec3134288fee4db14842652771f765ecbd7676c442529c9ea9ff4861153919559a7757a77593525774a44ccf15fc2af982b6501ca4f34bf3454ca57f11"})";
     auto e3 = NostrEventYYJSON::decode(knostr);
     std::cout << NostrEventYYJSON::verify_event(e3) << std::endl;
+
+    NostrRelayLibhv relay;
+    NostrRelaySimple rx(&relay);
+    relay.connect("wss://relay-jp.nostr.wirednet.jp/");
+    NostrSubscription subx;
+    /*rx.subscribe([](NostrEvent &ev){
+        NostrEventYYJSON i(&ev);
+        std::cout << i.encode() << std::endl;
+    },subx);*/
+    std::this_thread::sleep_for(3000ms);
     /*
 
     logger = new LoggerStdout();
@@ -84,7 +99,7 @@ int main(int argc, char *argv[])
     auto ret = rx_nostr.subscribe(
         callback,
         std::vector<NostrEventKind>{1},
-        "wss://relay-jp.nostr.wirednet.jp/",
+        ,
         MAX_EVENTS);
 
     if (!ret)

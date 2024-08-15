@@ -6,7 +6,11 @@
     "fmt",
     "nameof",
     "secp256k1",
-    "libhv",
+    {
+      "name":"libhv",
+      "default-features": false,
+      "features": ["ssl"]
+    },
     {
       "name": "cpp-yyjson",
       "host": true
