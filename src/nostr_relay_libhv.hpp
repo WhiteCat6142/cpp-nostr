@@ -68,7 +68,7 @@ namespace cpp_nostr
             }
             
             int res = ws->send(str);
-            return (res==0);
+            return (res!=-1);
         }
 
         bool unsubscribe()

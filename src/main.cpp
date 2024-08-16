@@ -65,7 +65,18 @@ int main(int argc, char *argv[])
     char *message = "Sample Message";
 
     std::cout << sha256(message, strlen(message)) << std::endl;
-/*
+
+    NostrRelayLibhv relay;
+    NostrRelaySimple rx(&relay);
+    relay.connect("wss://relay-jp.nostr.wirednet.jp/");
+    NostrSubscription subx;
+    rx.subscribe([](NostrEvent &ev)
+                 {
+        if(ev.kind!=1)
+        return;
+        NostrEventYYJSON i(&ev);
+        std::cout << i.encode() << std::endl; }, subx);
+
     if (argc > 1)
     {
         auto e = sign(argv[1]);
@@ -74,23 +85,20 @@ int main(int argc, char *argv[])
         NostrEventYYJSON i(&e2);
         auto y = i.encode();
         std::cout << e << std::endl;
-        std::cout << y << std::endl;
-    }*/
+        auto f = rx.publish(e2.id, e);
+        auto r = f.wait_for(100ms);
+        if (r==std::future_status::timeout)
+        std::cout << "timeouted" << std::endl;
+        bool result = f.get();
+        std::cout << result << std::endl;
+    }
 
     auto knostr = R"({"id":"93dc70f965af436095ba1d60d5c66ee235fdf82222e78238022317d73a95565f","pubkey":"6a36c1a62cba047b1cdb93bef316c6617c79816e32b80166c471c30bdb77e526","created_at":1723649902,"kind":1,"tags":[],"content":"test","sig":"8d08e7ec3134288fee4db14842652771f765ecbd7676c442529c9ea9ff4861153919559a7757a77593525774a44ccf15fc2af982b6501ca4f34bf3454ca57f11"})";
     auto e3 = NostrEventYYJSON::decode(knostr);
     std::cout << NostrEventYYJSON::verify_event(e3) << std::endl;
 
-std::cout << "t"<< std::endl;
-    NostrRelayLibhv relay;
-    NostrRelaySimple rx(&relay);
-    relay.connect("wss://relay-jp.nostr.wirednet.jp/");
-    NostrSubscription subx;
-    rx.subscribe([](NostrEvent &ev){
-        std::cout << "t"<< std::endl;
-        NostrEventYYJSON i(&ev);
-        std::cout << i.encode() << std::endl;
-    },subx);
+    std::cout << "t" << std::endl;
+
     std::this_thread::sleep_for(20000ms);
     /*
 

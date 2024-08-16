@@ -20,7 +20,7 @@ namespace cpp_nostr
     public:
         virtual NostrEventSubId subscribe(NostrEventCallback callback, const NostrSubscription &sub) = 0;
         virtual bool unsubscribe(const NostrEventSubId id) = 0;
-        virtual std::future<bool> publish(const std::string &ev) = 0;
+        virtual std::future<bool> publish(const std::string &id, const std::string &ev) = 0;
     };
 }
 
