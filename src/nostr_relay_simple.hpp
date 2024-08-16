@@ -40,6 +40,7 @@ namespace cpp_nostr
                 if(!(*iter).is_string())
                 return;
                 auto t = *((*iter).as_string());
+
                 if(t=="EVENT")
                 {
                     ++iter;
@@ -47,23 +48,24 @@ namespace cpp_nostr
                         return;
                     std::string id = std::string(*(*iter).as_string());
                     NostrEventSubId sub_id = (NostrEventSubId)std::stoul(id);
-                    //NostrEventCallback &fn = this->list.at(sub_id);
-                    //++iter;
-                    //auto ev = cast<NostrEvent>(*iter);
-                    //fn(ev);
+                    NostrEventCallback &fn = this->list.at(sub_id);
+                    ++iter;
+                    NostrEvent ev = cast<NostrEvent>(*iter);
+                    fn(ev);
                 }
                 if(t=="OK")
                 {
                     ++iter;
                     std::string id = std::string(*(*iter).as_string());
-                    std::promise<bool> &pr = pub_list.at(id);
-                    pr.set_value(true);
-                    pub_list.erase(id);
+                    //std::promise<bool> &pr = pub_list.at(id);
+                    //pr.set_value(true);
+                    //pub_list.erase(id);
                 } });
         }
         NostrEventSubId subscribe(NostrEventCallback callback, const NostrSubscription &sub) override
         {
             NostrEventSubId sub_id = NostrRelayUtils::makeUniqueSubId();
+
             std::string s = NostrRelayUtils::makeSubscribeCommand(sub_id, sub);
             relay->send(s);
             list.emplace(sub_id, callback);

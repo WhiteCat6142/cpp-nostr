@@ -4,6 +4,7 @@
 #include "nostr_event.hpp"
 #include <string>
 #include <functional>
+#include <iostream>
 
 namespace cpp_nostr
 {
@@ -16,7 +17,7 @@ namespace cpp_nostr
         NostrRelayInterface()
         {
         }
-        virtual ~NostrRelayInterface() = default;
+        ~NostrRelayInterface() = default;
         virtual bool send(const std::string &cmd) = 0;
         void set_callback(std::function<void(const std::string&)> callback_)
         {

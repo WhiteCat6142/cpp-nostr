@@ -5,6 +5,7 @@
 #include "nostr_subscription.hpp"
 #include "nostr_relay.hpp"
 #include <random>
+#include <string>
 #include <fmt/core.h>
 
 namespace cpp_nostr
@@ -18,7 +19,8 @@ namespace cpp_nostr
         }
         static std::string makeSubscribeCommand(const NostrEventSubId sub_id, const NostrSubscription &sub)
         {
-            return fmt::format(R"(["REQ","{}","{}"])", sub_id, sub.encode());
+            std::string str = sub.encode();
+            return fmt::format(R"(["REQ","{}",{}])", sub_id, str);
         }
         static std::string makePublishCommand(const std::string &ev)
         {
@@ -26,7 +28,7 @@ namespace cpp_nostr
         }
         static NostrEventSubId makeUniqueSubId()
         {
-            std::random_device rng;
+            static std::mt19937 rng;
             return rng();
         }
     };
