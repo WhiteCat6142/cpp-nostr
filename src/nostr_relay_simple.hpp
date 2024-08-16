@@ -49,24 +49,28 @@ namespace cpp_nostr
                         return;
                     std::string id = std::string(*(*iter).as_string());
                     NostrEventSubId sub_id = (NostrEventSubId)std::stoul(id);
-                    NostrEventCallback &fn = this->list.at(sub_id);
-                    ++iter;
-                    NostrEvent ev = cast<NostrEvent>(*iter);
-                    if(NostrEventYYJSON::verify_event(ev))
-                    fn(ev);
-                    else
-                    std::cout << "invalid sig" <<std::endl;
+                    if ( auto iter2 = this->list.find(sub_id); iter2 != std::end(this->list) )
+                    {
+                        NostrEventCallback fn = iter2->second;
+                        ++iter;
+                        NostrEvent ev = cast<NostrEvent>(*iter);
+                        if(NostrEventYYJSON::verify_event(ev))
+                        fn(ev);
+                        else
+                        std::cout << "invalid sig" <<std::endl;
+                    }
                 }
                 if(t=="OK")
                 {
                     ++iter;
                     std::string id = std::string(*(*iter).as_string());
-                    std::cout << id <<std::endl;
-                    std::cout << (this->pub_list.size()) <<std::endl;
-                    std::promise<bool> *pr = this->pub_list.at(id);
-                    pr->set_value(true);
-                    pub_list.erase(id);
-                    delete pr;
+                    if ( auto iter = this->pub_list.find(id); iter != std::end(this->pub_list) )
+                    {
+                        std::promise<bool> *pr = iter->second;
+                        pr->set_value(true);
+                        pub_list.erase(id);
+                        delete pr;
+                    }
                 } });
         }
         NostrEventSubId subscribe(NostrEventCallback callback, const NostrSubscription &sub) override
@@ -90,6 +94,7 @@ namespace cpp_nostr
             if (!relay->send(NostrRelayUtils::makePublishCommand(ev)))
             {
                 pr->set_value(false);
+                delete pr;
                 return ft;
             }
             pub_list.insert_or_assign(std::string(id), pr);
