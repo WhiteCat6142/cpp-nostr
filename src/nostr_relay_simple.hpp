@@ -93,7 +93,7 @@ namespace cpp_nostr
             list.erase(sub_id);
             return true;
         }
-        std::future<bool> publish(const std::string &id, const std::string &ev)
+        std::future<bool> publish(const NostrEvent &ev)
         {
             std::promise<bool> *pr = new std::promise<bool>();
             std::future<bool> ft = pr->get_future();
@@ -103,7 +103,7 @@ namespace cpp_nostr
                 delete pr;
                 return ft;
             }
-            pub_list.insert_or_assign(std::string(id), pr);
+            pub_list.insert_or_assign(ev.id, pr);
             return ft;
         }
     };

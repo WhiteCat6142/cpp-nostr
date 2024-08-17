@@ -11,7 +11,10 @@ namespace cpp_nostr
     public:
         virtual ~NostrEventInterface() = default;
         virtual bool finalize_event(const std::vector<uint8_t> &sk) = 0;
-        virtual const std::string encode() const = 0;
+        static std::string encode(const NostrEvent &ev)
+        {
+            return "";
+        }
         static bool verify_event(const NostrEvent &ev)
         {
             return false;

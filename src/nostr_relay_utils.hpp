@@ -4,6 +4,7 @@
 #include "nostr_event.hpp"
 #include "nostr_subscription.hpp"
 #include "nostr_relay.hpp"
+#include "nostr_event_yyjson.hpp"
 #include <random>
 #include <string>
 #include <fmt/core.h>
@@ -21,9 +22,9 @@ namespace cpp_nostr
         {
             return fmt::format(R"(["REQ","{}",{}])", sub_id, sub.encode());
         }
-        static std::string makePublishCommand(const std::string &ev)
+        static std::string makePublishCommand(const NostrEvent &ev)
         {
-            return fmt::format(R"(["EVENT",{}])",ev);
+            return fmt::format(R"(["EVENT",{}])", NostrEventYYJSON::encode(ev));
         }
         static NostrEventSubId makeUniqueSubId()
         {

@@ -1,5 +1,3 @@
-// #include <rx_nostr.hpp>
-// #include <logger_stdout.hpp>
 #include <thread>
 #include <iostream>
 #include <optional>
@@ -20,17 +18,8 @@ using namespace std::chrono_literals;
 using namespace cpp_nostr;
 
 static const int MAX_EVENTS = 300;
-// static LoggerInterface *logger = nullptr;
 static int count = 0;
 
-void callback(const NostrEvent &event)
-{
-    if (count >= MAX_EVENTS)
-    {
-        return;
-    }
-    // logger->log(LogLevel::INFO, event.content);
-}
 
 time_t now()
 {
@@ -52,7 +41,7 @@ std::string sign(char *nsec)
         .content = "test"};
     NostrEventYYJSON i(&ev);
     i.finalize_event(sk);
-    return i.encode();
+    return NostrEventYYJSON::encode(ev);
 }
 
 int main(int argc, char *argv[])
@@ -89,18 +78,15 @@ int main(int argc, char *argv[])
                  {
         if(ev.kind!=1)
         return;
-        NostrEventYYJSON i(&ev);
-        std::cout << i.encode() << std::endl; }, subx);
+        std::cout << NostrEventYYJSON::encode(ev) << std::endl; }, subx);
 
     if (argc > 1)
     {
         auto e = sign(argv[1]);
         auto e2 = NostrEventYYJSON::decode(e);
         std::cout << NostrEventYYJSON::verify_event(e2) << std::endl;
-        NostrEventYYJSON i(&e2);
-        auto y = i.encode();
         std::cout << e << std::endl;
-        auto f = rx.publish(e2.id, e);
+        auto f = rx.publish(e2);
         auto r = f.wait_for(100ms);
         if (r==std::future_status::timeout)
         std::cout << "timeouted" << std::endl;
@@ -118,45 +104,6 @@ int main(int argc, char *argv[])
     std::cout << "t" << std::endl;
 
     std::this_thread::sleep_for(20000ms);
-    /*
-    logger = new LoggerStdout();
-    RxNostr rx_nostr(logger);
-
-    logger->log(LogLevel::INFO, "[main] subscribe");
-    auto ret = rx_nostr.subscribe(
-        callback,
-        std::vector<NostrEventKind>{1},
-        ,
-        MAX_EVENTS);
-
-    if (!ret)
-    {
-        goto FINALIZE;
-    }
-
-    logger->log(LogLevel::INFO, "[main] Wait 3 seconds");
-    std::this_thread::sleep_for(3000ms);
-
-    if (argc > 1)
-    {
-        rx_nostr.send(sign(argv[1]),"wss://relay-jp.nostr.wirednet.jp/");
-    }
-
-    logger->log(LogLevel::INFO, "[main] unsubscribe");
-    rx_nostr.unsubscribe();
-
-    logger->log(LogLevel::INFO, "[main] wait 3 seconds");
-    std::this_thread::sleep_for(3000ms);
-
-    logger->log(LogLevel::INFO, "[main] bye");
-
-
-FINALIZE:
-
-    if (logger != nullptr)
-    {
-        delete logger;
-    }*/
 
     return 0;
 }

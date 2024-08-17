@@ -117,9 +117,9 @@ namespace cpp_nostr
             return false;
         }
 
-        const std::string encode() const override
+        static std::string encode(const NostrEvent &ev)
         {
-            const auto a = object(*ev);
+            const auto a = object(ev);
             return std::string(a.write());
         }
 
