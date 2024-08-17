@@ -19,8 +19,7 @@ namespace cpp_nostr
         }
         static std::string makeSubscribeCommand(const NostrEventSubId sub_id, const NostrSubscription &sub)
         {
-            std::string str = sub.encode();
-            return fmt::format(R"(["REQ","{}",{}])", sub_id, str);
+            return fmt::format(R"(["REQ","{}",{}])", sub_id, sub.encode());
         }
         static std::string makePublishCommand(const std::string &ev)
         {

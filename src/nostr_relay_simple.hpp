@@ -26,7 +26,7 @@ namespace cpp_nostr
     private:
         NostrRelayInterface *relay;
         std::unordered_map<NostrEventSubId, NostrEventCallback> list;
-        std::unordered_map<std::string, std::promise<bool>*> pub_list;
+        std::unordered_map<std::string, std::promise<bool> *> pub_list;
 
     public:
         NostrRelaySimple(NostrRelayInterface *relay_) : relay(relay_)
@@ -71,6 +71,11 @@ namespace cpp_nostr
                         pub_list.erase(id);
                         delete pr;
                     }
+                }
+                if(t=="NOTICE")
+                {
+                    ++iter;
+                    std::cout << *(*iter).as_string() <<std::endl;
                 } });
         }
         NostrEventSubId subscribe(NostrEventCallback callback, const NostrSubscription &sub) override
@@ -85,6 +90,7 @@ namespace cpp_nostr
         bool unsubscribe(const NostrEventSubId sub_id) override
         {
             relay->send(NostrRelayUtils::makeUnsubscribeCommand(sub_id));
+            list.erase(sub_id);
             return true;
         }
         std::future<bool> publish(const std::string &id, const std::string &ev)
