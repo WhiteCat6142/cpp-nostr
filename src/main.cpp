@@ -32,8 +32,9 @@ std::string sign(char *nsec)
     std::vector<uint8_t> sk;
     if (!NIP19::decode(std::string(nsec), sk))
         return "";
-    auto pk = NostrEventYYJSON::get_publickey(sk);
-    std::cout << NIP19::encode("npub", *pk) << std::endl;
+    auto pk = *NostrEventYYJSON::get_publickey(sk);
+    std::cout << NIP19::encode("npub", pk) << std::endl;
+    std::cout << bytes2hex(pk.data(),pk.size())<< std::endl;
     std::vector<std::vector<std::string>> vec{};
     NostrEvent ev{
         .created_at = now(),
