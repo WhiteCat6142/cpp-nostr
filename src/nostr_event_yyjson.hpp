@@ -83,9 +83,8 @@ namespace cpp_nostr
 
             const std::string input63 = writeJson(ev);
 
-            const std::string id = sha256(input63.c_str(), input63.length());
-            ev.id = id;
-            const std::vector<uint8_t> digest = hex2bytes(id);
+            const std::vector<uint8_t> digest = sha256(input63.c_str(), input63.length());
+            ev.id = bytes2hex(digest.data(),digest.size());
 
             uint8_t aux[32] = {0};
             if (!fill_random(aux, sizeof(aux)))
@@ -109,8 +108,8 @@ namespace cpp_nostr
             bool res = false;
 
             const std::string input63 = writeJson(ev);
-            const std::string id = sha256(input63.c_str(), input63.length());
-            if (ev.id != id)
+            const std::vector<uint8_t> id = sha256(input63.c_str(), input63.length());
+            if (hex2bytes(ev.id) != id)
                 return false;
 
             secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_VERIFY);

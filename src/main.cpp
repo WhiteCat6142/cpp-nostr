@@ -54,8 +54,9 @@ int main(int argc, char *argv[])
     std::cout << (pk == data) << std::endl;
 
     char *message = "Sample Message";
+    auto d = sha256(message, strlen(message));
 
-    std::cout << sha256(message, strlen(message)) << std::endl;
+    std::cout << bytes2hex(d.data(),d.size()) << std::endl;
 
     NostrRelayLibhv relay;
     NostrRelaySimple rx(&relay);

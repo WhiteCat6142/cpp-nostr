@@ -44,16 +44,15 @@ std::vector<uint8_t> hex2bytes(const std::string &s)
     return v;
 }
 
-std::string sha256(const char *message, const size_t len)
+std::vector<uint8_t> sha256(const char *message, const size_t len)
 {
-
-    unsigned char digest[SHA256_DIGEST_LENGTH];
+    std::vector<uint8_t> digest(SHA256_DIGEST_LENGTH);
     SHA256_CTX sha_ctx;
     SHA256_Init(&sha_ctx);
     SHA256_Update(&sha_ctx, message, len);
-    SHA256_Final(digest, &sha_ctx);
+    SHA256_Final(digest.data(), &sha_ctx);
 
-    return bytes2hex(digest, SHA256_DIGEST_LENGTH);
+    return digest;
 }
 
 int fill_random(uint8_t* data, size_t size) {
