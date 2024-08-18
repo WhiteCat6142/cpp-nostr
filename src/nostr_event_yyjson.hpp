@@ -7,6 +7,9 @@
 #include "./nostr_event_interface.hpp"
 
 #include "./utils.hpp"
+#include <string>
+#include <vector>
+#include <optional>
 #include <secp256k1.h>
 #include <secp256k1_schnorrsig.h>
 
@@ -17,37 +20,50 @@ namespace cpp_nostr
     class NostrEventYYJSON final : public NostrEventInterface
     {
     private:
-        NostrEvent* ev;
-
         static const std::string writeJson(const NostrEvent &ev)
         {
             const auto a = array{0, ev.pubkey, ev.created_at, ev.kind, ev.tags, ev.content};
             return std::string(a.write());
         }
 
-    public:
-        NostrEventYYJSON(NostrEvent *ev_) : ev(ev_)
-        {
-        }
-
-        bool finalize_event(const std::vector<uint8_t> &sk_) override
+        static secp256k1_context *get_context(secp256k1_keypair &keypair, const std::vector<uint8_t> &sk_)
         {
             if (sk_.size() != 32)
-                return false;
+                return nullptr;
             const unsigned char *sk = sk_.data();
             secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
-
+            
             uint8_t randomize[32];
             if (!fill_random(randomize, sizeof(randomize)))
                 goto FAIL;
-            secp256k1_context_randomize(ctx, randomize);
+            if (!secp256k1_context_randomize(ctx, randomize))
+                goto FAIL;
 
             if (!secp256k1_ec_seckey_verify(ctx, sk))
                 goto FAIL;
 
-            secp256k1_keypair keypair;
             if (!secp256k1_keypair_create(ctx, &keypair, sk))
                 goto FAIL;
+
+            return ctx;
+
+            FAIL:
+            secp256k1_context_destroy(ctx);
+            std::cout << "fail" << std::endl;
+            return nullptr;
+        }
+
+    public:
+        NostrEventYYJSON()
+        {
+        }
+
+        static bool finalize_event(NostrEvent &ev, const std::vector<uint8_t> &sk_)
+        {
+            secp256k1_keypair keypair;
+            secp256k1_context *ctx = get_context(keypair, sk_);
+            if (ctx == nullptr)
+            return false;
 
             secp256k1_xonly_pubkey pubkey;
             if (!secp256k1_keypair_xonly_pub(ctx, &pubkey, nullptr, &keypair))
@@ -63,13 +79,12 @@ namespace cpp_nostr
             std::cout << "fail" << std::endl;
             return false;
         NEXT:
+            ev.pubkey = bytes2hex(serialized_pubkey, sizeof(serialized_pubkey));
 
-            ev->pubkey = bytes2hex(serialized_pubkey, sizeof(serialized_pubkey));
-
-            const std::string input63 = writeJson(*ev);
+            const std::string input63 = writeJson(ev);
 
             const std::string id = sha256(input63.c_str(), input63.length());
-            ev->id = id;
+            ev.id = id;
             const std::vector<uint8_t> digest = hex2bytes(id);
 
             uint8_t aux[32] = {0};
@@ -85,7 +100,7 @@ namespace cpp_nostr
 
             secp256k1_context_destroy(ctx);
 
-            ev->sig = bytes2hex(sig, 64);
+            ev.sig = bytes2hex(sig, 64);
             return true;
         }
 
@@ -98,7 +113,7 @@ namespace cpp_nostr
             if (ev.id != id)
                 return false;
 
-            secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
+            secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_VERIFY);
             std::vector<uint8_t> serialized_pubkey = hex2bytes(ev.pubkey);
             std::vector<uint8_t> sig = hex2bytes(ev.sig);
             std::vector<uint8_t> msg = hex2bytes(ev.id);
@@ -127,6 +142,34 @@ namespace cpp_nostr
         {
             auto obj = read(s);
             return cast<NostrEvent>(obj);
+        }
+
+        static std::optional<std::vector<uint8_t>> get_publickey(const std::vector<uint8_t> &sk_)
+        {
+            secp256k1_keypair keypair;
+            secp256k1_xonly_pubkey pubkey;
+
+            secp256k1_context *ctx = get_context(keypair, sk_);
+            if (ctx == nullptr)
+            return std::nullopt;
+
+            if (!secp256k1_keypair_xonly_pub(ctx, &pubkey, nullptr, &keypair))
+                goto FAIL;
+
+            unsigned char serialized_pubkey[32];
+            if (!secp256k1_xonly_pubkey_serialize(ctx, serialized_pubkey, &pubkey))
+                goto FAIL;
+
+            goto NEXT;
+        FAIL:
+            secp256k1_context_destroy(ctx);
+            std::cout << "fail" << std::endl;
+            return std::nullopt;
+        NEXT:
+
+            std::vector<uint8_t> pk(serialized_pubkey, serialized_pubkey + sizeof(serialized_pubkey));
+            return pk;
+            
         }
     };
 }

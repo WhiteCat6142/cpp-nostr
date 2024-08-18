@@ -3,14 +3,18 @@
 
 #include "nostr_event.hpp"
 #include <string>
+#include <vector>
+#include <optional>
 
 namespace cpp_nostr
 {
     class NostrEventInterface
     {
     public:
-        virtual ~NostrEventInterface() = default;
-        virtual bool finalize_event(const std::vector<uint8_t> &sk) = 0;
+        static bool finalize_event(NostrEvent &ev, const std::vector<uint8_t> &sk)
+        {
+            return false;
+        }
         static std::string encode(const NostrEvent &ev)
         {
             return "";
@@ -22,6 +26,10 @@ namespace cpp_nostr
         static NostrEvent decode(const std::string &s)
         {
             return NostrEvent();
+        }
+        static std::vector<uint8_t> get_publickey(const std::vector<uint8_t> &code)
+        {
+            return std::vector<uint8_t>{};
         }
     };
 }
