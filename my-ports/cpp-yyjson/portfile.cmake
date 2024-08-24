@@ -15,7 +15,10 @@ vcpkg_cmake_configure(
 vcpkg_cmake_install()
 
 vcpkg_fixup_pkgconfig()
+vcpkg_cmake_config_fixup(
+    PACKAGE_NAME cpp_yyjson
+    CONFIG_PATH lib/cmake/cpp_yyjson
+)
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug")
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
-
-vcpkg_copy_pdbs()

@@ -3,6 +3,7 @@
 ### Build & Installation
 Require ninja, vcpkg, cmake and lld to build this software.
 Also this depends on cpp-yyjson, libhv, libbech32, secp256k1 which are automatically installed by vcpkg.
+Additionally, we need to install libssl-dev.
 
 To compile, execute the following commands.
 ```sh
