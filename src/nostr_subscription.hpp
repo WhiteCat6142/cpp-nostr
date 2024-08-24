@@ -56,7 +56,7 @@ namespace cpp_nostr
             {
                 if (!first)
                     s.append(", ");
-                for(const auto p : *tags)
+                for(const auto &p : *tags)
                 {
                     s.append(fmt::format(R"("{}": {})", p.first, p.second));
                 }

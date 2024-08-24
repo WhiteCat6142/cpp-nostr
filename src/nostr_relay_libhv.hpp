@@ -57,7 +57,7 @@ namespace cpp_nostr
             };
             auto result = ws->open(relay.c_str());
             is_connected = true;
-            return true;
+            return (result!=-1);
         }
 
         bool send(const std::string &str) override

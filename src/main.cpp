@@ -17,10 +17,7 @@
 using namespace std::chrono_literals;
 using namespace cpp_nostr;
 
-static const int MAX_EVENTS = 300;
-static int count = 0;
-
-time_t now()
+uint64_t now()
 {
     time_t n;
     std::time(&n);
@@ -37,7 +34,7 @@ std::string sign(char *nsec)
     std::cout << bytes2hex(pk.data(),pk.size())<< std::endl;
     std::vector<std::vector<std::string>> vec{};
     NostrEvent ev{
-        .created_at = now(),
+        .created_at = (now()),
         .kind = 1,
         .tags = vec,
         .content = "test"};
@@ -54,7 +51,7 @@ int main(int argc, char *argv[])
     std::cout << NIP19::decode(std::string(npub), pk).value() << std::endl;
     std::cout << (pk == data) << std::endl;
 
-    char *message = "Sample Message";
+    const char *message = "Sample Message";
     auto d = sha256(message, strlen(message));
 
     std::cout << bytes2hex(d.data(),d.size()) << std::endl;
