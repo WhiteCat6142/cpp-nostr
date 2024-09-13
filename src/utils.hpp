@@ -57,8 +57,16 @@ std::vector<uint8_t> sha256(const char *message, const size_t len)
 
 int fill_random(uint8_t* data, size_t size) {
     std::random_device rng;
+    if((size&7)==0)
+    {
+    uint64_t *data2 = (uint64_t*)data;
+    for(auto it=data2;it<data2+(size>>3);++it)
+        *it=rng();
+    }
+    else{
     for(auto it=data;it<data+size;++it)
         *it=rng();
+    }
     return 1;
 }
 
