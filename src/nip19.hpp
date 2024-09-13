@@ -48,6 +48,7 @@ namespace cpp_nostr
         static std::string encode(const std::string &hrp, const std::vector<uint8_t> &code)
         {
             std::vector<uint8_t> pk;
+            pk.reserve(32);
             convert_bits<8, 5>(code.begin(), code.end(),
                                [&](unsigned char c) mutable
                                {
@@ -60,6 +61,7 @@ namespace cpp_nostr
         {
             bech32::DecodedResult decodedResult = bech32::decode(s);
             out.clear();
+            out.reserve((decodedResult.dp.size()<<3)/5+1);
             // 5bits -> 8bits
             convert_bits<5, 8>(decodedResult.dp.begin(), decodedResult.dp.end(),
                                [&](unsigned char c) mutable

@@ -1,20 +1,33 @@
 #include <benchmark/benchmark.h>
 #include <vector>
+#include <optional>
+#include <map>
 
-static void BM_FtVector(benchmark::State& state) {
-  // Benchmarkでは測らない前処理をここで書いておきます。
-  std::vector<int> v;
+#include <nostr_event_yyjson.hpp>
+#include <utils.hpp>
+#include <nip19.hpp>
 
-  // このfor文の中にBenchmarkを測りたい処理を書きます。
-  for (auto _ : state) {
-    for (int i = 0; i < state.range(0); ++i) {
-      v.push_back(i);
+using namespace cpp_nostr;
+
+static void BM_FtVector(benchmark::State &state)
+{
+    std::vector<uint8_t> sk = *NostrEventYYJSON::generateKey();
+    std::vector<std::vector<std::string>> vec{};
+    NostrEvent ev{
+        .created_at = 0,
+        .kind = 1,
+        .tags = vec,
+        .content = ""};
+    NostrEventYYJSON::finalize_event(ev, sk);
+
+    for (auto _ : state)
+    {
+        for (int i = 0; i < state.range(0); ++i)
+        {
+            NostrEventYYJSON::verify_event(ev);
+        }
     }
-  }
 }
-// Benchmarkを実行するには、このマクロを書きます。
-// Range(1, 1 << 22)で、state.range(0)に段階的に渡す数を指定できます。
-BENCHMARK(BM_FtVector)->Range(1, 1 << 16);
+BENCHMARK(BM_FtVector)->Range(1, 1 << 8);
 
-// main関数
 BENCHMARK_MAIN();

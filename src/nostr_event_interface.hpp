@@ -11,6 +11,10 @@ namespace cpp_nostr
     class NostrEventInterface
     {
     public:
+        static std::optional<std::vector<uint8_t>> generateKey()
+        {
+            return std::vector<uint8_t>{};
+        }
         static bool finalize_event(NostrEvent &ev, const std::vector<uint8_t> &sk)
         {
             return false;
