@@ -12,13 +12,13 @@ namespace cpp_nostr
 
 std::string bytes2hex(const uint8_t *data, const size_t len)
 {
-    const char hexchars[] = "0123456789abcdef";
+    constexpr char hexchars[] = "0123456789abcdef";
     std::string s;
     s.reserve((len << 1) + 1);
 
-    for (size_t i = 0; i < len; i++)
+    for (auto it =data; it < data+len; it++)
     {
-        uint8_t b = data[i];
+        uint8_t b = *it;
 
         s.push_back(hexchars[b >> 4]);
         s.push_back(hexchars[b & 0xF]);
@@ -44,7 +44,7 @@ std::vector<uint8_t> hex2bytes(const std::string &s)
     return v;
 }
 
-std::vector<uint8_t> sha256(const char *message, const size_t len)
+inline std::vector<uint8_t> sha256(const char *message, const size_t len)
 {
     std::vector<uint8_t> digest(SHA256_DIGEST_LENGTH);
     SHA256_CTX sha_ctx;

@@ -21,6 +21,7 @@ namespace cpp_nostr
     class NostrEventYYJSON final : public NostrEventInterface
     {
     private:
+    static inline secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
         static const std::string writeJson(const NostrEvent &ev)
         {
             const auto a = array{0, ev.pubkey, ev.created_at, ev.kind, ev.tags, ev.content};
@@ -32,7 +33,6 @@ namespace cpp_nostr
             if (sk_.size() != 32)
                 return nullptr;
             const unsigned char *sk = sk_.data();
-            secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
 
             if (!secp256k1_ec_seckey_verify(ctx, sk))
                 goto FAIL;
@@ -43,7 +43,6 @@ namespace cpp_nostr
             return ctx;
 
         FAIL:
-            secp256k1_context_destroy(ctx);
             std::cout << "fail" << std::endl;
             return nullptr;
         }
@@ -98,7 +97,6 @@ namespace cpp_nostr
 
             goto NEXT;
         FAIL:
-            secp256k1_context_destroy(ctx);
             std::cout << "fail" << std::endl;
             return false;
         NEXT:
@@ -121,38 +119,25 @@ namespace cpp_nostr
             if (!secp256k1_schnorrsig_verify(ctx, sig, digest, 32, &pubkey))
                 goto FAIL;
 
-            secp256k1_context_destroy(ctx);
-
             ev.sig = bytes2hex(sig, 64);
             return true;
         }
 
         static bool verify_event(const NostrEvent &ev)
         {
-            bool res = false;
-
             const std::string input63 = writeJson(ev);
             const std::vector<uint8_t> id = sha256(input63.c_str(), input63.length());
             if (hex2bytes(ev.id) != id)
                 return false;
-
-            secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_VERIFY);
+            if (ev.sig.length() != 128)
+                return false;
             std::vector<uint8_t> serialized_pubkey = hex2bytes(ev.pubkey);
             std::vector<uint8_t> sig = hex2bytes(ev.sig);
             std::vector<uint8_t> msg = hex2bytes(ev.id);
             secp256k1_xonly_pubkey pubkey;
-            if (sig.size() != 64)
-                goto FAIL;
-            if (msg.size() != 32)
-                goto FAIL;
             if (!secp256k1_xonly_pubkey_parse(ctx, &pubkey, serialized_pubkey.data()))
-                goto FAIL;
-            res = secp256k1_schnorrsig_verify(ctx, sig.data(), msg.data(), 32, &pubkey);
-            secp256k1_context_destroy(ctx);
-            return res;
-        FAIL:
-            secp256k1_context_destroy(ctx);
-            return false;
+                return false;
+            return secp256k1_schnorrsig_verify(ctx, sig.data(), msg.data(), 32, &pubkey);
         }
 
         static std::string encode(const NostrEvent &ev)
@@ -186,7 +171,6 @@ namespace cpp_nostr
 
             return pk;
         FAIL:
-            secp256k1_context_destroy(ctx);
             std::cout << "fail" << std::endl;
             return std::nullopt;
         }
