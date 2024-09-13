@@ -29,11 +29,26 @@ find_package(libhv CONFIG REQUIRED)
 find_package(cpp_yyjson CONFIG REQUIRED)
 find_package(libbech32 CONFIG REQUIRED)
 
+find_package(benchmark CONFIG REQUIRED)
+
 add_executable(main src/main.cpp)
 
 target_compile_options(main PUBLIC -O2 -Wall)
 
+add_executable(bench src/bench.cpp)
+
+target_compile_options(bench PUBLIC -O2 -Wall)
+
 target_include_directories(main
+    PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        ${OPENSSL_INCLUDE_DIR}
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+target_include_directories(bench
     PUBLIC
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -51,3 +66,14 @@ target_link_libraries(main PUBLIC unofficial::secp256k1 unofficial::secp256k1_pr
 target_link_libraries(main PUBLIC hv_static)
 target_link_libraries(main PUBLIC cpp_yyjson::cpp_yyjson)
 target_link_libraries(main PUBLIC bech32::bech32)
+
+target_link_libraries(bench PUBLIC Threads::Threads)
+target_link_libraries(bench PUBLIC ${OPENSSL_LIBRARIES})
+target_link_libraries(bench PUBLIC fmt::fmt)
+target_link_libraries(bench PUBLIC nameof::nameof)
+target_link_libraries(bench PUBLIC yyjson::yyjson)
+target_link_libraries(bench PUBLIC unofficial::secp256k1 unofficial::secp256k1_precomputed)
+target_link_libraries(bench PUBLIC hv_static)
+target_link_libraries(bench PUBLIC cpp_yyjson::cpp_yyjson)
+target_link_libraries(bench PUBLIC bech32::bech32)
+target_link_libraries(bench PUBLIC benchmark::benchmark benchmark::benchmark_main)

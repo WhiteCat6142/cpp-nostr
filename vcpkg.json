@@ -2,6 +2,7 @@
   "name": "cpp-nostr",
   "version": "1.0",
   "dependencies": [
+    "benchmark",
     "yyjson",
     "fmt",
     "nameof",
